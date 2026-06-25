@@ -1,4 +1,4 @@
-# AAYA — Member A · Product Intelligence & Experience
+# AAYA 
 
 > India's First Autonomous Financial Brain  
 > **paisa aaya · future aaya**
@@ -60,17 +60,4 @@ aaya/
 
 ---
 
-## Member A Tech Layers
 
-| Layer | File | Status |
-|---|---|---|
-| Frontend (React + Tailwind) | App.jsx, Layout.jsx | ✅ |
-| LLM Layer (Claude Sonnet) | claudeAPI.js | ✅ 7 functions |
-| Regional NLP | VoiceInterface.jsx | ✅ 7 languages |
-| Voice Interface | VoiceInterface.jsx | ✅ Web Speech API |
-| Real-time Data | Dashboard.jsx | ✅ Live updates |
-| Behavioural Biometrics | Biometrics.jsx | ✅ Anomaly scoring |
-| Maps & Location | MapTracker.jsx | ✅ Dispatch + ATM |
-| Landing Page (GSAP) | LandingPage.jsx | ✅ Full animations |
-
-*AAYA Hackathon 2025 · Member A*
