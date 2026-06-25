@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AAYA — India's First Autonomous Financial Brain</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- GSAP + ScrollTrigger + SplitText workaround -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        ink:    '#070708',
+        inklt:  '#0f0f11',
+        red:    '#D42B2B',
+        redlt:  '#e03535',
+        gold:   '#C4A35A',
+        chalk:  '#F2EFE8',
+        muted:  'rgba(242,239,232,0.42)',
+        faint:  'rgba(242,239,232,0.12)',
+      },
+      fontFamily: {
+        display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        body:    ['"DM Sans"', 'system-ui', 'sans-serif'],
+      },
+    }
+  }
+}
+</script>
+
+<style>
+  /* ─── BASE ─────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: #070708;
+    color: #F2EFE8;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── NAV ──────────────────────────────────── */
+  #nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 52px;
+    border-bottom: 1px solid rgba(242,239,232,0.08);
+    background: rgba(7,7,8,0.88);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    transition: padding .4s;
+  }
+  #nav.scrolled { padding: 14px 52px; }
+  .nav-logo {
+    display: flex; align-items: center; gap: 11px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px; font-weight: 600; color: #F2EFE8;
+    text-decoration: none; letter-spacing: .04em;
+  }
+  .nav-logo-ring {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: #D42B2B;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 700; color: #fff; font-family: 'DM Sans', sans-serif;
+    flex-shrink: 0;
+  }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a {
+    color: rgba(242,239,232,0.45); text-decoration: none;
+    font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+    transition: color .2s;
+  }
+  .nav-links a:hover { color: #F2EFE8; }
+  .nav-cta {
+    background: #D42B2B; color: #fff;
+    padding: 10px 24px; border-radius: 2px;
+    font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+    text-decoration: none; transition: background .2s;
+  }
+  .nav-cta:hover { background: #e03535; }
+
+  /* ─── HERO ─────────────────────────────────── */
+  #hero {
+    height: 100vh; min-height: 680px;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 0 52px 96px;
+    position: relative; overflow: hidden;
+  }
+  .hero-vline {
+    position: absolute; left: 50%; top: 0;
+    width: 1px; height: 130px;
+    background: linear-gradient(to bottom, transparent, #C4A35A);
+    transform: scaleY(0); transform-origin: top;
+  }
+  .hero-noise {
+    position: absolute; inset: 0; pointer-events: none; opacity: .03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+  .hero-glow {
+    position: absolute; right: -10%; bottom: -20%;
+    width: 60vw; height: 60vw;
+    background: radial-gradient(circle, rgba(212,43,43,0.07) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .eyebrow {
+    font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
+    color: rgba(242,239,232,0.4); margin-bottom: 26px;
+    font-family: 'DM Sans', sans-serif; font-weight: 300;
+  }
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(62px, 9.5vw, 118px);
+    font-weight: 700; line-height: .9;
+    color: #F2EFE8; margin-bottom: 36px;
+    letter-spacing: -.01em;
+  }
+  .hero-title .accent { color: #C4A35A; font-style: italic; }
+  .hero-title .dim { color: rgba(242,239,232,0.28); }
+  .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 44px; }
+  .pill {
+    border: 1px solid rgba(242,239,232,0.12); border-radius: 100px;
+    padding: 6px 15px; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: rgba(242,239,232,0.42); font-family: 'DM Sans', sans-serif;
+  }
+  .hero-actions { display: flex; gap: 18px; align-items: center; }
+  .btn-primary {
+    background: #D42B2B; color: #fff;
+    padding: 15px 32px; border-radius: 2px;
+    font-size: 12px; letter-spacing: .09em; text-transform: uppercase;
+    text-decoration: none; transition: background .2s, transform .15s;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: #e03535; transform: translateY(-1px); }
+  .btn-ghost {
+    color: rgba(242,239,232,0.45); text-decoration: none;
+    font-size: 12px; letter-spacing: .09em; text-transform: uppercase;
+    border-bottom: 1px solid rgba(242,239,232,0.15); padding-bottom: 2px;
+    transition: color .2s, border-color .2s;
+  }
+  .btn-ghost:hover { color: #F2EFE8; border-color: #F2EFE8; }
+
+  /* ─── RED CARD ─────────────────────────────── */
+  #card-scene {
+    position: fixed; inset: 0; z-index: 700;
+    pointer-events: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #red-card {
+    width: min(400px, 82vw);
+    background: #D42B2B;
+    border-radius: 5px;
+    padding: clamp(28px,4vw,48px);
+    position: relative; overflow: hidden;
+    box-shadow: 0 60px 160px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.05);
+    /* starts off-screen via JS/GSAP */
+    transform: translateY(100vh) rotate(-8deg);
+    will-change: transform, opacity;
+  }
+  /* dot-matrix pattern left half */
+  #red-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; width: 46%; height: 100%;
+    background-image: radial-gradient(circle, rgba(255,255,255,.22) 1.2px, transparent 1.2px);
+    background-size: 17px 17px;
+    background-position: 6px 6px;
+  }
+  .card-wordmark {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(68px,12vw,130px); font-weight: 700; line-height: .82;
+    color: rgba(255,255,255,.16); letter-spacing: -.02em;
+    position: relative; z-index: 1;
+    margin-bottom: clamp(20px,3vw,38px);
+    user-select: none;
+  }
+  .card-rule {
+    width: 100%; height: 1px;
+    background: rgba(255,255,255,.22);
+    position: relative; z-index: 1;
+    margin: clamp(16px,2.5vw,28px) 0;
+  }
+  .card-sub {
+    font-family: 'DM Sans', sans-serif;
+    font-size: clamp(12px,1.8vw,16px);
+    color: rgba(255,255,255,.78);
+    line-height: 1.55; margin-bottom: clamp(12px,2vw,20px);
+    font-weight: 300;
+    position: relative; z-index: 1;
+  }
+  .card-tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(20px,3vw,30px); font-weight: 600;
+    color: #fff; line-height: 1.2;
+    position: relative; z-index: 1;
+    font-style: italic;
+  }
+
+  /* ─── DIVIDER LINE ──────────────────────────── */
+  .hline { width: 100%; height: 1px; background: rgba(242,239,232,0.08); }
+
+  /* ─── SECTION BASE ─────────────────────────── */
+  .section { padding: 110px 52px; }
+  .section-sm { padding: 80px 52px; }
+  .sec-head { margin-bottom: 56px; }
+  .sec-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(38px,5.5vw,68px); font-weight: 700; line-height: 1.05;
+    color: #F2EFE8; margin-bottom: 18px;
+  }
+  .sec-title .it { font-style: italic; color: #C4A35A; }
+  .sec-sub {
+    font-size: 16px; color: rgba(242,239,232,0.45); line-height: 1.78;
+    max-width: 560px;
+  }
+
+  /* ─── USP SPLIT ─────────────────────────────── */
+  #usp {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+    align-items: center; padding: 120px 52px;
+    position: relative; z-index: 10;
+  }
+  .usp-quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px,5vw,62px); font-weight: 400; line-height: 1.2;
+    color: #F2EFE8;
+  }
+  .usp-quote em { font-style: italic; color: #C4A35A; }
+  .usp-right p { font-size: 15px; color: rgba(242,239,232,0.48); line-height: 1.85; margin-bottom: 22px; }
+  .usp-right blockquote {
+    font-size: 14px; color: #C4A35A; font-style: italic; line-height: 1.75;
+    border-left: 2px solid #D42B2B; padding-left: 18px; margin-top: 28px;
+  }
+
+  /* ─── STATS ─────────────────────────────────── */
+  #stats { padding: 0 52px 96px; }
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(4,1fr);
+    border: 1px solid rgba(242,239,232,0.08);
+  }
+  .stat-cell {
+    padding: 40px 32px;
+    border-right: 1px solid rgba(242,239,232,0.08);
+    transition: background .35s;
+  }
+  .stat-cell:last-child { border-right: none; }
+  .stat-cell:hover { background: rgba(242,239,232,0.025); }
+  .stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(44px,6vw,72px); font-weight: 700; line-height: .9;
+    color: #F2EFE8; margin-bottom: 10px;
+  }
+  .stat-num sup { font-size: .5em; vertical-align: super; color: #D42B2B; }
+  .stat-label { font-size: 13px; color: rgba(242,239,232,0.42); line-height: 1.55; }
+
+  /* ─── PILLARS ───────────────────────────────── */
+  #pillars { padding: 110px 52px; }
+  .pillar-grid {
+    display: grid; grid-template-columns: repeat(3,1fr);
+    border: 1px solid rgba(242,239,232,0.08);
+  }
+  .pillar-cell {
+    padding: 38px 30px;
+    border-right: 1px solid rgba(242,239,232,0.08);
+    transition: background .35s;
+    cursor: default;
+    position: relative; overflow: hidden;
+  }
+  .pillar-cell::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(212,43,43,0.06), transparent 60%);
+    opacity: 0; transition: opacity .4s;
+  }
+  .pillar-cell:hover::after { opacity: 1; }
+  .pillar-cell:nth-child(3n) { border-right: none; }
+  .pillar-cell:nth-child(-n+3) { border-bottom: 1px solid rgba(242,239,232,0.08); }
+  .pillar-num {
+    font-size: 11px; letter-spacing: .18em; color: #C4A35A;
+    margin-bottom: 16px; display: block;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .pillar-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px; font-weight: 700; color: #F2EFE8;
+    margin-bottom: 12px; line-height: 1.2;
+  }
+  .pillar-desc { font-size: 13px; color: rgba(242,239,232,0.42); line-height: 1.75; }
+
+  /* ─── FEATURE ROWS ──────────────────────────── */
+  #features { padding: 110px 52px; }
+  .feat-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+    align-items: center;
+    margin-bottom: 90px; padding-bottom: 90px;
+    border-bottom: 1px solid rgba(242,239,232,0.07);
+  }
+  .feat-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .feat-row.rev .ft { order: 2; }
+  .feat-row.rev .fv { order: 1; }
+  .feat-eyebrow {
+    font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
+    color: #C4A35A; margin-bottom: 14px;
+  }
+  .feat-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(30px,3.5vw,44px); font-weight: 700; line-height: 1.1;
+    color: #F2EFE8; margin-bottom: 16px;
+  }
+  .feat-desc { font-size: 14px; color: rgba(242,239,232,0.45); line-height: 1.82; margin-bottom: 24px; }
+  .feat-list { list-style: none; }
+  .feat-list li {
+    font-size: 13px; color: rgba(242,239,232,0.42); padding: 9px 0;
+    border-bottom: 1px solid rgba(242,239,232,0.06);
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .feat-list li::before { content: '→'; color: #C4A35A; flex-shrink: 0; margin-top: 1px; }
+
+  /* ─── MOCK SCREENS ──────────────────────────── */
+  .mock-shell {
+    background: #0d0d0f;
+    border: 1px solid rgba(242,239,232,0.08);
+    border-radius: 10px; overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+  }
+  .mock-titlebar {
+    background: rgba(255,255,255,0.03);
+    padding: 10px 15px; display: flex; align-items: center; gap: 7px;
+    border-bottom: 1px solid rgba(242,239,232,0.06);
+  }
+  .mock-dot { width: 9px; height: 9px; border-radius: 50%; }
+  .mock-label {
+    font-size: 11px; color: rgba(242,239,232,0.3);
+    margin-left: 8px; letter-spacing: .05em;
+  }
+  .mock-body { padding: 20px; }
+
+  /* Dashboard mock */
+  .health-ring {
+    width: 88px; height: 88px; border-radius: 50%;
+    border: 3px solid #D42B2B;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 13px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px; font-weight: 700; color: #F2EFE8;
+    box-shadow: 0 0 24px rgba(212,43,43,0.2);
+  }
+  .bank-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 9px 0; border-bottom: 1px solid rgba(242,239,232,0.05); font-size: 13px;
+  }
+  .bank-row:last-of-type { border-bottom: none; }
+  .bname { color: rgba(242,239,232,0.42); }
+  .bval { color: #F2EFE8; font-weight: 500; }
+  .alert-strip {
+    background: rgba(212,43,43,0.1); border: 1px solid rgba(212,43,43,0.28);
+    border-radius: 4px; padding: 12px 14px; margin-top: 14px;
+    font-size: 12px; color: #ff8c80; line-height: 1.55;
+  }
+
+  /* Chat mock */
+  .chat-wrap { display: flex; flex-direction: column; gap: 12px; }
+  .chat-speaker { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 5px; }
+  .spk-future { color: #D42B2B; }
+  .spk-you { color: rgba(242,239,232,0.35); text-align: right; }
+  .bubble {
+    border-radius: 8px; padding: 12px 15px;
+    font-size: 13px; line-height: 1.65; max-width: 90%;
+  }
+  .bubble-them { background: rgba(212,43,43,0.14); border: 1px solid rgba(212,43,43,0.28); color: #ffb3b0; }
+  .bubble-me { background: rgba(242,239,232,0.05); border: 1px solid rgba(242,239,232,0.08); color: rgba(242,239,232,0.45); margin-left: auto; }
+  .chat-cta {
+    width: 100%; margin-top: 10px;
+    background: #D42B2B; color: #fff; border: none; border-radius: 3px;
+    padding: 12px; font-size: 13px; cursor: pointer; letter-spacing: .05em;
+    font-family: 'DM Sans', sans-serif; transition: background .2s;
+  }
+  .chat-cta:hover { background: #e03535; }
+
+  /* Elderly mock */
+  .elderly-shell { background: #050507; }
+  .btn-3 {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 18px;
+  }
+  .btn-3 button {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(242,239,232,0.1);
+    color: #F2EFE8; padding: 20px 8px;
+    border-radius: 8px; font-size: 12px; cursor: pointer;
+    line-height: 1.5; transition: background .2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-3 button:hover { background: rgba(255,255,255,0.09); }
+  .fraud-alert {
+    background: rgba(212,43,43,0.16); border: 1px solid rgba(212,43,43,0.45);
+    border-radius: 6px; padding: 14px; text-align: left;
+  }
+
+  /* Dispatch mock */
+  .dispatch-shell {
+    background: #070710; border: 1px solid rgba(242,239,232,0.08);
+    border-radius: 10px; padding: 26px;
+    position: relative; overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+  }
+  .map-grid {
+    position: absolute; inset: 0; opacity: .05;
+    background-image:
+      linear-gradient(rgba(255,255,255,.5) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.5) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .d-stat {
+    background: rgba(212,43,43,0.1); border: 1px solid rgba(212,43,43,0.28);
+    border-radius: 4px; padding: 12px 15px; margin-bottom: 10px;
+    position: relative; z-index: 1;
+  }
+  .d-stat.green { background: rgba(76,175,80,0.1); border-color: rgba(76,175,80,0.28); }
+  .d-label { font-size: 10px; color: rgba(242,239,232,0.35); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 4px; }
+  .d-value { font-size: 14px; color: #F2EFE8; font-weight: 500; }
+  .gps-dot {
+    display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+    background: #4caf50; margin-right: 8px;
+    box-shadow: 0 0 0 3px rgba(76,175,80,0.25);
+    animation: gpsPulse 2s infinite;
+  }
+  @keyframes gpsPulse {
+    0%,100% { box-shadow: 0 0 0 3px rgba(76,175,80,0.25); }
+    50%      { box-shadow: 0 0 0 8px rgba(76,175,80,0.08); }
+  }
+
+  /* ─── AGENTS ────────────────────────────────── */
+  #agents { padding: 110px 52px; }
+  .agents-grid {
+    display: grid; grid-template-columns: repeat(4,1fr);
+    border: 1px solid rgba(242,239,232,0.08);
+    margin-top: 56px;
+  }
+  .agent-card {
+    padding: 28px 22px;
+    border-right: 1px solid rgba(242,239,232,0.08);
+    border-bottom: 1px solid rgba(242,239,232,0.08);
+    transition: background .3s; cursor: default;
+  }
+  .agent-card:nth-child(4n) { border-right: none; }
+  .agent-card:nth-last-child(-n+4) { border-bottom: none; }
+  .agent-card:hover { background: rgba(242,239,232,0.025); }
+  .agent-icon {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: rgba(212,43,43,0.12); border: 1px solid rgba(212,43,43,0.28);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; margin-bottom: 14px;
+  }
+  .agent-name { font-size: 13px; font-weight: 500; color: #F2EFE8; margin-bottom: 7px; }
+  .agent-desc { font-size: 12px; color: rgba(242,239,232,0.38); line-height: 1.65; }
+
+  /* ─── CONSTITUTION ──────────────────────────── */
+  #constitution { padding: 110px 52px; }
+  .constitution-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+    align-items: center; margin-top: 56px;
+  }
+  .rule-card {
+    background: rgba(242,239,232,0.03); border: 1px solid rgba(242,239,232,0.08);
+    border-left: 3px solid #C4A35A; border-radius: 2px;
+    padding: 15px 18px; margin-bottom: 12px;
+    font-size: 14px; color: rgba(242,239,232,0.5); line-height: 1.55;
+    font-style: italic;
+    transition: background .3s, border-color .3s;
+  }
+  .rule-card:hover { background: rgba(242,239,232,0.05); border-left-color: #D42B2B; }
+  .os-visual {
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; text-align: center; gap: 0;
+    padding: 40px;
+    border: 1px solid rgba(242,239,232,0.08); border-radius: 4px;
+    background: rgba(242,239,232,0.02);
+    position: relative; overflow: hidden;
+  }
+  .os-big {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(100px,18vw,200px); font-weight: 700; line-height: .85;
+    color: rgba(212,43,43,0.06); position: absolute;
+    pointer-events: none; user-select: none;
+  }
+  .os-label-top { font-size: 12px; color: rgba(242,239,232,0.3); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 8px; position: relative; z-index: 1; }
+  .os-word { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: rgba(242,239,232,0.3); position: relative; z-index: 1; }
+  .os-arrow { font-size: 22px; color: #C4A35A; margin: 10px 0; position: relative; z-index: 1; }
+  .os-word-big { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 700; color: #F2EFE8; position: relative; z-index: 1; }
+
+  /* ─── DEMO ──────────────────────────────────── */
+  #demo { padding: 110px 52px; }
+  .demo-grid {
+    display: grid; grid-template-columns: repeat(3,1fr);
+    border: 1px solid rgba(242,239,232,0.08); margin-top: 56px;
+  }
+  .demo-step {
+    padding: 32px 26px;
+    border-right: 1px solid rgba(242,239,232,0.08);
+    border-bottom: 1px solid rgba(242,239,232,0.08);
+    transition: background .3s;
+  }
+  .demo-step:nth-child(3n) { border-right: none; }
+  .demo-step:nth-last-child(-n+3) { border-bottom: none; }
+  .demo-step:hover { background: rgba(242,239,232,0.02); }
+  .step-tag {
+    font-size: 10px; letter-spacing: .18em; color: #C4A35A;
+    text-transform: uppercase; display: block; margin-bottom: 13px;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .step-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px; font-weight: 700; color: #F2EFE8; margin-bottom: 10px;
+  }
+  .step-desc { font-size: 13px; color: rgba(242,239,232,0.38); line-height: 1.68; }
+
+  /* ─── TECH STACK ─────────────────────────────── */
+  #tech { padding: 110px 52px; }
+  .tech-table {
+    width: 100%; border-collapse: collapse;
+    border: 1px solid rgba(242,239,232,0.08);
+    font-size: 13px; margin-top: 56px;
+  }
+  .tech-table th {
+    text-align: left; padding: 14px 20px;
+    font-size: 10px; letter-spacing: .15em; text-transform: uppercase;
+    color: rgba(242,239,232,0.35); border-bottom: 1px solid rgba(242,239,232,0.08);
+    font-weight: 400;
+  }
+  .tech-table td {
+    padding: 14px 20px; border-bottom: 1px solid rgba(242,239,232,0.05);
+    color: rgba(242,239,232,0.5); vertical-align: top;
+  }
+  .tech-table tr:last-child td { border-bottom: none; }
+  .tech-table tr:hover td { background: rgba(242,239,232,0.02); }
+  .tech-tag {
+    display: inline-block; background: rgba(212,43,43,0.12);
+    border: 1px solid rgba(212,43,43,0.25); border-radius: 100px;
+    padding: 3px 10px; font-size: 11px; color: #D42B2B; margin-right: 4px;
+  }
+  .tech-owner { color: #C4A35A; font-size: 11px; letter-spacing: .06em; }
+
+  /* ─── CTA ───────────────────────────────────── */
+  #cta {
+    padding: 130px 52px; text-align: center;
+    background: linear-gradient(180deg, #070708 0%, #0c0507 100%);
+    position: relative; overflow: hidden;
+  }
+  .cta-glow {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at 50% 80%, rgba(212,43,43,0.09) 0%, transparent 65%);
+  }
+  .cta-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(44px,8vw,96px); font-weight: 700; line-height: 1.0;
+    color: #F2EFE8; margin-bottom: 26px; position: relative; z-index: 1;
+  }
+  .cta-title em { font-style: italic; color: #C4A35A; }
+  .cta-sub {
+    font-size: 16px; color: rgba(242,239,232,0.42); max-width: 460px;
+    margin: 0 auto 44px; line-height: 1.75; position: relative; z-index: 1;
+  }
+  .cta-btns { display: flex; gap: 18px; justify-content: center; position: relative; z-index: 1; }
+  .watermark {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(80px,20vw,220px); font-weight: 700; line-height: .85;
+    color: rgba(255,255,255,0.025); letter-spacing: .06em;
+    margin-top: 64px; user-select: none; position: relative; z-index: 1;
+  }
+
+  /* ─── FOOTER ─────────────────────────────────── */
+  #footer {
+    padding: 38px 52px;
+    border-top: 1px solid rgba(242,239,232,0.08);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .foot-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px; font-weight: 600; color: #F2EFE8;
+  }
+  .foot-tag { font-size: 12px; color: rgba(242,239,232,0.35); font-style: italic; margin-top: 4px; }
+  .foot-right { font-size: 11px; color: rgba(242,239,232,0.18); text-align: right; line-height: 1.6; }
+
+  /* ─── SCROLL REVEAL ─────────────────────────── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity .75s ease, transform .75s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: .12s; }
+  .reveal-delay-2 { transition-delay: .22s; }
+
+  /* ─── RESPONSIVE ─────────────────────────────── */
+  @media (max-width: 900px) {
+    #nav { padding: 16px 22px; }
+    .nav-links { display: none; }
+    #hero, .section, .section-sm, #usp, #stats, #pillars, #features, #agents,
+    #constitution, #demo, #tech, #cta, #footer { padding-left: 22px !important; padding-right: 22px !important; }
+    #usp { grid-template-columns: 1fr !important; gap: 40px !important; padding-top: 80px !important; }
+    .stats-grid { grid-template-columns: 1fr 1fr !important; }
+    .stat-cell { border-bottom: 1px solid rgba(242,239,232,0.08); }
+    .pillar-grid { grid-template-columns: 1fr 1fr !important; }
+    .pillar-cell:nth-child(2n) { border-right: none; }
+    .pillar-cell:nth-child(-n+4) { border-bottom: 1px solid rgba(242,239,232,0.08); }
+    .feat-row { grid-template-columns: 1fr !important; gap: 40px !important; }
+    .feat-row.rev .ft, .feat-row.rev .fv { order: unset !important; }
+    .agents-grid { grid-template-columns: 1fr 1fr !important; }
+    .constitution-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+    .demo-grid { grid-template-columns: 1fr 1fr !important; }
+    #footer { flex-direction: column; gap: 20px; text-align: center; }
+    .foot-right { text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════ NAV ═══════════════════════════════ -->
+<nav id="nav">
+  <a class="nav-logo" href="#hero">
+    <div class="nav-logo-ring">₹</div>
+    AAYA
+  </a>
+  <ul class="nav-links">
+    <li><a href="#pillars">Pillars</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#agents">Agents</a></li>
+    <li><a href="#demo">Demo</a></li>
+    <li><a href="#tech">Stack</a></li>
+  </ul>
+  <a class="nav-cta" href="./app/index.html">Launch Dashboard →</a>
+</nav>
+
+<!-- ═══════ RED CARD (fixed, GSAP-animated) ═══ -->
+<div id="card-scene">
+  <div id="red-card">
+    <div class="card-wordmark">AAYA<br>आया</div>
+    <div class="card-rule"></div>
+    <div class="card-sub">India's First<br>Autonomous Financial Brain</div>
+    <div class="card-tagline">paisa aaya<br>future aaya</div>
+  </div>
+</div>
+
+<!-- ═══════ HERO ═══════════════════════════════ -->
+<section id="hero">
+  <div class="hero-line" id="vline"></div>
+  <div class="hero-noise"></div>
+  <div class="hero-glow"></div>
+  <div style="position:relative;z-index:2">
+    <p class="eyebrow" id="hero-ey">Hackathon Product Proposal · 2025</p>
+    <h1 class="hero-title" id="hero-title">
+      India's<br>
+      <span class="accent">Autonomous</span><br>
+      <span class="dim">Financial Brain</span>
+    </h1>
+    <div class="pill-row" id="hero-pills">
+      <span class="pill">Predict</span>
+      <span class="pill">Act</span>
+      <span class="pill">Protect</span>
+      <span class="pill">22 Languages</span>
+      <span class="pill">Learn</span>
+      <span class="pill">Trust</span>
+    </div>
+    <div class="hero-actions" id="hero-actions">
+      <a class="btn-primary" href="./app/index.html">Launch Dashboard →</a>
+      <a class="btn-ghost" href="#pillars">See Features →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ USP SPLIT (like video's "Nicene Creed..." section) ══ -->
+<div class="hline"></div>
+<section id="usp">
+  <div class="reveal">
+    <p class="usp-quote">
+      <em>Aaya</em> doesn't wait<br>
+      for you. It predicts,<br>
+      acts, and shows up<br>
+      at your door.
+    </p>
+  </div>
+  <div class="usp-right reveal reveal-delay-1">
+    <p>Every bank app is a dashboard you visit. Aaya flips this: the AI monitors, decides, and executes. You approve. You don't initiate.</p>
+    <p>Built for the grandmother in Andhra Pradesh who speaks Telugu, not English. Voice-first, spoken scam alerts, simplified UI across all 22 Indian languages.</p>
+    <blockquote>"Other teams built a smarter bank app. We built India's first financial brain — one that thinks, speaks 22 languages, acts autonomously, and physically shows up when you need help."</blockquote>
+  </div>
+</section>
+
+<!-- ═══════ STATS ════════════════════════════════ -->
+<div class="hline"></div>
+<section id="stats">
+  <div class="stats-grid">
+    <div class="stat-cell reveal">
+      <p class="stat-num">60<sup>%</sup></p>
+      <p class="stat-label">of India's banking population is not English-comfortable</p>
+    </div>
+    <div class="stat-cell reveal reveal-delay-1">
+      <p class="stat-num">70<sup>%+</sup></p>
+      <p class="stat-label">dropout rate for elderly &amp; rural users on digital platforms</p>
+    </div>
+    <div class="stat-cell reveal reveal-delay-2">
+      <p class="stat-num">22</p>
+      <p class="stat-label">Indian languages supported via Bhashini API — voice-first</p>
+    </div>
+    <div class="stat-cell reveal" style="transition-delay:.32s">
+      <p class="stat-num">8</p>
+      <p class="stat-label">specialised AI agents collaborating in real time for every user</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ PILLARS ══════════════════════════════ -->
+<div class="hline"></div>
+<section id="pillars">
+  <div class="sec-head reveal">
+    <p class="eyebrow">The Six Core Pillars</p>
+    <h2 class="sec-title">Everything your bank<br><span class="it">should have done first.</span></h2>
+    <p class="sec-sub">Six interlocking pillars that no competitor — bank, fintech, or startup — currently combines in a single platform.</p>
+  </div>
+  <div class="pillar-grid reveal">
+    <div class="pillar-cell">
+      <span class="pillar-num">01</span>
+      <p class="pillar-title">Financial Twin Engine</p>
+      <p class="pillar-desc">A living AI model per customer that continuously learns income, spending, goals, and risk appetite. Predicts marriage, home, retirement — before you ask.</p>
+    </div>
+    <div class="pillar-cell">
+      <span class="pillar-num">02</span>
+      <p class="pillar-title">Agentic Automation</p>
+      <p class="pillar-desc">Multi-bank live aggregation via RBI Account Aggregator. FD maturing? AI renews. EMI missed? AI restructures. You approve — you never initiate.</p>
+    </div>
+    <div class="pillar-cell">
+      <span class="pillar-num">03</span>
+      <p class="pillar-title">Elderly &amp; Accessibility</p>
+      <p class="pillar-desc">Voice-first in 22 Indian languages. 3-button UI, large fonts, spoken scam alerts in regional language. Family Guardian Mode with instant alerts.</p>
+    </div>
+    <div class="pillar-cell">
+      <span class="pillar-num">04</span>
+      <p class="pillar-title">Predictive Intelligence</p>
+      <p class="pillar-desc">Crisis Anticipation Agent predicts cash crunches 30–90 days ahead. Blind Spot Scanner finds bad loans, idle cash. Auto-claims government schemes.</p>
+    </div>
+    <div class="pillar-cell">
+      <span class="pillar-num">05</span>
+      <p class="pillar-title">Emotional &amp; Social Layer</p>
+      <p class="pillar-desc">Future Self Simulator: chat with your 45-year-old self. Financial Time Machine. Digital Clone Marketplace. Goal Swarms for collective bargaining.</p>
+    </div>
+    <div class="pillar-cell">
+      <span class="pillar-num">06</span>
+      <p class="pillar-title">Trust &amp; Explainability</p>
+      <p class="pillar-desc">Every AI action generates an Explainability Receipt. Immutable Trust Ledger. Behavioural biometrics. Full RBI Account Aggregator compliance.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ FEATURES ═════════════════════════════ -->
+<div class="hline"></div>
+<section id="features">
+  <p class="eyebrow reveal" style="margin-bottom:56px">Flagship Features</p>
+
+  <!-- 1. Dashboard -->
+  <div class="feat-row reveal">
+    <div class="ft">
+      <p class="feat-eyebrow">Live · Multi-bank</p>
+      <h3 class="feat-title">One screen.<br>Every bank. Live.</h3>
+      <p class="feat-desc">SBI, HDFC, ICICI — balances, FDs, SIPs, loans, and your Financial Health Score in one place. The Adversarial Rate Agent continuously bids for the best deal across all banks, without you lifting a finger.</p>
+      <ul class="feat-list">
+        <li>Predictive cash flow: 'You will run short ₹3,200 on 28th June'</li>
+        <li>Goal-based savings agent auto-moves surplus money weekly</li>
+        <li>SIP pause/resume — detects low balance, pauses, auto-resumes</li>
+        <li>One-tap FD renewal at the best rate found across all banks</li>
+      </ul>
+    </div>
+    <div class="fv">
+      <div class="mock-shell">
+        <div class="mock-titlebar">
+          <div class="mock-dot" style="background:#ff5f56"></div>
+          <div class="mock-dot" style="background:#ffbd2e"></div>
+          <div class="mock-dot" style="background:#27c93f"></div>
+          <span class="mock-label">Aaya · Dashboard</span>
+        </div>
+        <div class="mock-body">
+          <div class="health-ring">847</div>
+          <p style="text-align:center;font-size:10px;color:rgba(242,239,232,0.3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:18px">Financial Health Score — Live</p>
+          <div class="bank-row"><span class="bname">SBI Savings</span><span class="bval">₹1,24,500</span></div>
+          <div class="bank-row"><span class="bname">HDFC FD · matures 25 Jun</span><span class="bval" style="color:#ffb3b0">₹5,00,000 ⚡</span></div>
+          <div class="bank-row"><span class="bname">ICICI SIP · monthly</span><span class="bval">₹8,000 active</span></div>
+          <div class="bank-row"><span class="bname">Total Portfolio</span><span class="bval" style="color:#C4A35A">₹18,42,300</span></div>
+          <div class="alert-strip">⚡ Better FD rate at ICICI (7.4% vs current 6.8%). Tap to renew — earn ₹3,000 extra.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Future Self -->
+  <div class="feat-row rev reveal">
+    <div class="ft">
+      <p class="feat-eyebrow">Emotional · Unique · Claude-powered</p>
+      <h3 class="feat-title">Talk to your<br>future financial self.</h3>
+      <p class="feat-desc">Not a graph. Not a projection table. A first-person conversation that makes people feel the rupee-level cost of inaction — powered by Claude Sonnet AI.</p>
+      <ul class="feat-list">
+        <li>Chat with your 45-year-old self in real time</li>
+        <li>Delaying SIP 4 years = ₹38 lakh lower retirement corpus</li>
+        <li>Financial Time Machine: 'What if I had invested at 22?'</li>
+        <li>Digital Clone Marketplace — see 1,000 people like you who made it</li>
+      </ul>
+    </div>
+    <div class="fv">
+      <div class="mock-shell">
+        <div class="mock-titlebar">
+          <div class="mock-dot" style="background:#ff5f56"></div>
+          <div class="mock-dot" style="background:#ffbd2e"></div>
+          <div class="mock-dot" style="background:#27c93f"></div>
+          <span class="mock-label">Aaya · Future Self Simulator</span>
+        </div>
+        <div class="mock-body">
+          <div class="chat-wrap">
+            <div>
+              <p class="chat-speaker spk-future">Future You · Age 45</p>
+              <div class="bubble bubble-them">I'm 45-year-old you. Delaying your SIP by 4 years cost you <strong style="color:#ff8c80">₹38 lakh</strong> at retirement. And that 18% personal loan instead of negotiating? ₹12 lakh extra gone.</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end">
+              <p class="chat-speaker spk-you">You · Now</p>
+              <div class="bubble bubble-me">What should I do differently this month?</div>
+            </div>
+            <div>
+              <div class="bubble bubble-them">Start ₹5,000/month SIP today. That single choice compounds to <strong style="color:#ff8c80">₹43.6 lakh</strong> extra by the time you're me. I wish someone had told me.</div>
+            </div>
+            <button class="chat-cta">Start SIP Now — ₹5,000/month →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Elderly -->
+  <div class="feat-row reveal">
+    <div class="ft">
+      <p class="feat-eyebrow">Elderly · Voice · 22 Languages</p>
+      <h3 class="feat-title">Banking for<br>every Indian.</h3>
+      <p class="feat-desc">Built for the grandmother in Andhra Pradesh who speaks Telugu, not English. Voice-first, spoken fraud alerts, and a human helper at the door when technology isn't enough.</p>
+      <ul class="feat-list">
+        <li>"Yeh call fraud hai — OTP bilkul mat dena" spoken aloud in real time</li>
+        <li>Simplified Mode: 3-button UI, large fonts, voice-first navigation</li>
+        <li>Family Guardian Mode — instant alerts on unusual transactions</li>
+        <li>60-sec confusion trigger → connects to live bank agent via video call</li>
+      </ul>
+    </div>
+    <div class="fv">
+      <div class="mock-shell elderly-shell">
+        <div class="mock-titlebar">
+          <span style="font-size:11px;color:#C4A35A;letter-spacing:.1em;text-transform:uppercase">Simplified Mode · Telugu · Voice Active</span>
+        </div>
+        <div class="mock-body" style="text-align:center;padding:26px 20px">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:24px;color:#F2EFE8;margin-bottom:5px">నమస్కారం, అమ్మాజీ</p>
+          <p style="font-size:12px;color:rgba(242,239,232,0.35);margin-bottom:24px">Namaskaram, Ammaji — Good morning</p>
+          <div class="btn-3">
+            <button>💰<br>Balance</button>
+            <button>📞<br>Help</button>
+            <button>👨‍👩‍👦<br>Family</button>
+          </div>
+          <div class="fraud-alert">
+            <p style="font-size:10px;color:#D42B2B;text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px">⚠ Fraud Alert · Speaking Aloud Now</p>
+            <p style="font-size:13px;color:#ffb3b0;line-height:1.6">"యీ కాల్ fraud — OTP చెప్పకండి"</p>
+            <p style="font-size:12px;color:rgba(242,239,232,0.35);margin-top:5px">OTP mat dena — yeh fraud hai</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Home Helper -->
+  <div class="feat-row rev reveal">
+    <div class="ft">
+      <p class="feat-eyebrow">Physically Unique · Only In India</p>
+      <h3 class="feat-title">The only fintech<br>that shows up<br>at your door.</h3>
+      <p class="feat-desc">After 3 consecutive failed attempts on the same task, Aaya autonomously dispatches a bank-verified, GPS-tracked helper to the elderly customer's physical address.</p>
+      <ul class="feat-list">
+        <li>Helper is bank-ID authenticated and background verified</li>
+        <li>Family gets SMS on dispatch, arrival, and task completion</li>
+        <li>Assists with KYC renewal, FD renewal, form filling</li>
+        <li>Post-visit voice feedback collected in customer's regional language</li>
+      </ul>
+    </div>
+    <div class="fv">
+      <div class="dispatch-shell">
+        <div class="map-grid"></div>
+        <p style="font-size:10px;color:rgba(242,239,232,0.3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;position:relative;z-index:1">Helper Dispatch · Live GPS</p>
+        <div class="d-stat">
+          <p class="d-label">Status</p>
+          <p class="d-value"><span class="gps-dot"></span>En route — 8 min away</p>
+        </div>
+        <div class="d-stat green">
+          <p class="d-label">Helper</p>
+          <p class="d-value" style="color:#a5d6a7">Ramesh K. — Background Verified ✓</p>
+        </div>
+        <div class="d-stat">
+          <p class="d-label">Task</p>
+          <p class="d-value">FD Renewal · Ammaji's HDFC Account</p>
+        </div>
+        <p style="font-size:11px;color:rgba(242,239,232,0.28);margin-top:14px;text-align:center;position:relative;z-index:1">Family notified · Raju (son) ✓ · Priya (daughter) ✓</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ AGENTS ════════════════════════════════ -->
+<div class="hline"></div>
+<section id="agents">
+  <div class="sec-head reveal">
+    <p class="eyebrow">Multi-Agent Architecture</p>
+    <h2 class="sec-title">Eight specialised agents.<br><span class="it">One financial brain.</span></h2>
+    <p class="sec-sub">Each agent owns a domain, collaborates in real time, and hands off tasks seamlessly — so you always get the right intelligence at the right moment.</p>
+  </div>
+  <div class="agents-grid reveal">
+    <div class="agent-card"><div class="agent-icon">🤝</div><p class="agent-name">Acquisition Agent</p><p class="agent-desc">Digital onboarding, KYC, goal discovery, risk profiling via conversational NLP</p></div>
+    <div class="agent-card"><div class="agent-icon">🔮</div><p class="agent-name">Life Event Agent</p><p class="agent-desc">Monitors signals and predicts upcoming life events before the customer acts</p></div>
+    <div class="agent-card"><div class="agent-icon">📈</div><p class="agent-name">Financial Coach</p><p class="agent-desc">SIP growth simulations, loan impact models, retirement projections in real time</p></div>
+    <div class="agent-card"><div class="agent-icon">🏦</div><p class="agent-name">Product Agent</p><p class="agent-desc">Compares and recommends the best financial products across all connected banks</p></div>
+    <div class="agent-card"><div class="agent-icon">💬</div><p class="agent-name">Relationship Manager</p><p class="agent-desc">Personalised nudges, financial reviews, loyalty management and retention</p></div>
+    <div class="agent-card"><div class="agent-icon">⚡</div><p class="agent-name">Crisis Anticipation</p><p class="agent-desc">30–90 day forward cash flow prediction with recovery planning before crisis hits</p></div>
+    <div class="agent-card"><div class="agent-icon">🎯</div><p class="agent-name">Opportunity Hunter</p><p class="agent-desc">Scans and auto-claims government schemes, cashback, and tax benefits</p></div>
+    <div class="agent-card"><div class="agent-icon">🛡️</div><p class="agent-name">Security Agent</p><p class="agent-desc">Behavioural biometrics, anomaly detection, real-time scam alert generation</p></div>
+  </div>
+</section>
+
+<!-- ═══════ FINANCIAL CONSTITUTION ══════════════ -->
+<div class="hline"></div>
+<section id="constitution">
+  <div class="sec-head reveal">
+    <p class="eyebrow">Financial Constitution Engine</p>
+    <h2 class="sec-title">Set rules once.<br><span class="it">Aaya runs them forever.</span></h2>
+    <p class="sec-sub">Define your financial life in plain language. Aaya converts it into automated execution logic running indefinitely in the background — no bank in India offers this.</p>
+  </div>
+  <div class="constitution-grid reveal">
+    <div>
+      <div class="rule-card">"Maintain a minimum balance of ₹50,000 at all times"</div>
+      <div class="rule-card">"Auto-invest any surplus above ₹70,000 into my SIP"</div>
+      <div class="rule-card">"Pause all subscriptions if monthly spending exceeds ₹30,000"</div>
+      <div class="rule-card">"Never let my FDs auto-renew without showing me the best rate first"</div>
+      <div class="rule-card">"Alert my son if any transaction above ₹10,000 happens on my account"</div>
+    </div>
+    <div class="os-visual">
+      <div class="os-big">₹</div>
+      <p class="os-label-top">Transformed from</p>
+      <p class="os-word">A tool</p>
+      <p class="os-arrow">↓</p>
+      <p class="os-word-big">A Financial OS</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ DEMO FLOW ════════════════════════════ -->
+<div class="hline"></div>
+<section id="demo">
+  <div class="sec-head reveal">
+    <p class="eyebrow">Hackathon Demo Flow</p>
+    <h2 class="sec-title">6 minutes. 2 users.<br><span class="it">One unforgettable story.</span></h2>
+    <p class="sec-sub">Rahul (25, working professional) and Ammaji (72, rural Andhra Pradesh) — both using Aaya in a single seamless narrative.</p>
+  </div>
+  <div class="demo-grid reveal">
+    <div class="demo-step"><span class="step-tag">Step 01 · 45 sec</span><p class="step-title">Multi-bank Dashboard</p><p class="step-desc">Log in as Rahul. SBI, HDFC, ICICI load simultaneously. Financial Health Score updates live. No app-switching.</p></div>
+    <div class="demo-step"><span class="step-tag">Step 02 · 60 sec</span><p class="step-title">Agentic FD Renewal</p><p class="step-desc">FD matures in 3 days. Adversarial Rate Agent finds a better rate. Rahul taps once — renewed instantly. No branch.</p></div>
+    <div class="demo-step"><span class="step-tag">Step 03 · 75 sec</span><p class="step-title">Future Self Simulator</p><p class="step-desc">Rahul chats with his 45-year-old self. Delaying SIP = ₹34 lakh less. He sets it up in the same screen.</p></div>
+    <div class="demo-step"><span class="step-tag">Step 04 · 75 sec</span><p class="step-title">Elderly + Scam Alert</p><p class="step-desc">Switch to Ammaji. Telugu voice interface. Vishing call simulated — Aaya announces fraud alert aloud in Telugu.</p></div>
+    <div class="demo-step"><span class="step-tag">Step 05 · 60 sec</span><p class="step-title">Home Helper Dispatch</p><p class="step-desc">Ammaji fails FD renewal 3 times. Helper dispatched. Live GPS. Rahul and Priya notified. Family fully looped in.</p></div>
+    <div class="demo-step"><span class="step-tag">Step 06 · 45 sec</span><p class="step-title">B2B Bank Dashboard</p><p class="step-desc">Switch to bank partner view. Churn prediction, cross-sell signals, branch load forecast, ATM live status.</p></div>
+  </div>
+</section>
+
+<!-- ═══════ TECH STACK ════════════════════════════ -->
+<div class="hline"></div>
+<section id="tech">
+  <div class="sec-head reveal">
+    <p class="eyebrow">Tech Stack</p>
+    <h2 class="sec-title">Built to production<br><span class="it">standards from day one.</span></h2>
+  </div>
+  <table class="tech-table reveal">
+    <thead>
+      <tr>
+        <th style="width:22%">Layer</th>
+        <th style="width:44%">Technology</th>
+        <th>Owner</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Frontend</td><td>React.js + TailwindCSS — responsive dashboard and Simplified Mode UI</td><td><span class="tech-owner">AAYA</span></td></tr>
+      <tr><td>Backend / API</td><td>Python FastAPI — microservice architecture, REST + WebSocket endpoints</td><td><span class="tech-owner">AAYA</span></td></tr>
+      <tr><td>Agentic AI Engine</td><td>LangGraph + LangChain — multi-agent orchestration with state management</td><td><span class="tech-owner">AAYA</span></td></tr>
+      <tr><td>LLM Layer</td><td><span class="tech-tag">Claude Sonnet</span> — reasoning, language generation, Future Self Simulator</td><td><span class="tech-owner">AAYA</span></td></tr>
+      <tr><td>Regional NLP</td><td>IndicNLP + Bhashini API — 22 Indian languages, translation and NER</td><td><span class="tech-owner">AAYA</span></td></tr>
+      <tr><td>Voice Interface</td><td>Web Speech API + gTTS — regional voice input and spoken output</td><td><span class="tech-owner">AAYA</span></td></tr>
+      <tr><td>Account Aggregator</td><td>Setu AA / Finvu AA — RBI-compliant live multi-bank data fetch</td><td><span class="tech-owner">AAYA</span></td></tr>
+      <tr><td>Constitution Engine</td><td>Rule engine on LangGraph — natural language rule parsing + automated execution</td><td><span class="tech-owner">AAYA</span></td></tr>
+      <tr><td>Database</td><td>PostgreSQL — user profiles, twin state, agent logs, consent records</td><td><span class="tech-owner">AAYA</span></td></tr>
+      <tr><td>Maps &amp; Dispatch</td><td>Google Maps API + custom dispatch engine + background verification</td><td><span class="tech-owner">AAYA</span></td></tr>
+      <tr><td>Security</td><td>AES-256 at rest, TLS 1.3 in transit, per-session anomaly detection</td><td><span class="tech-owner">AAYA</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════ CTA ═══════════════════════════════════ -->
+<div class="hline"></div>
+<section id="cta">
+  <div class="cta-glow"></div>
+  <p class="eyebrow reveal" style="margin-bottom:28px">Act Before They Ask</p>
+  <h2 class="cta-title reveal">
+    Unify every account.<br>
+    Speak every language.<br>
+    Protect <em>every</em> customer.
+  </h2>
+  <p class="cta-sub reveal">India's first autonomous financial brain — predicting, acting, and showing up for every Indian, in their language, on their terms.</p>
+  <div class="cta-btns reveal">
+    <a class="btn-primary" href="./app/index.html">Launch Dashboard →</a>
+    <a class="btn-ghost" href="#pillars">All Features →</a>
+  </div>
+  <div class="watermark">AAYA</div>
+</section>
+
+<!-- ═══════ FOOTER ════════════════════════════════ -->
+<div class="hline"></div>
+<footer id="footer">
+  <div>
+    <p class="foot-logo">₹ AAYA आया</p>
+    <p class="foot-tag">paisa aaya · future aaya</p>
+  </div>
+  <p class="foot-right">
+    Claude Sonnet · LangGraph · Bhashini · RBI Account Aggregator<br>
+    Hackathon Product Proposal · 2025
+  </p>
+</footer>
+
+<!-- ═══════════════════════════════════════════════
+     JAVASCRIPT — GSAP red card + scroll reveals
+════════════════════════════════════════════════ -->
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+/* ── NAV shrink on scroll ── */
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60);
+}, { passive: true });
+
+/* ── Hero vertical line ── */
+gsap.to('#vline', { scaleY: 1, duration: 1.2, ease: 'power3.out', delay: 0.3 });
+
+/* ── Hero text sequence ── */
+const heroTl = gsap.timeline({ delay: 0.5 });
+heroTl
+  .from('#hero-ey',      { y: 18, opacity: 0, duration: .6, ease: 'power2.out' })
+  .from('#hero-title',   { y: 28, opacity: 0, duration: .8, ease: 'power3.out' }, '-=.2')
+  .from('#hero-pills',   { y: 16, opacity: 0, duration: .6, ease: 'power2.out' }, '-=.3')
+  .from('#hero-actions', { y: 14, opacity: 0, duration: .6, ease: 'power2.out' }, '-=.3');
+
+/* ── RED CARD animation ──
+   1. Starts below screen
+   2. Shoots up, overshoots and covers the hero title
+   3. Bounces to settle tilted in center
+   4. On scroll: exits upward, fades out
+*/
+const card = document.getElementById('red-card');
+const cardScene = document.getElementById('card-scene');
+
+// Entry timeline
+const cardTl = gsap.timeline({ delay: 1.0 });
+cardTl
+  .set(card, { y: '110vh', rotation: -8 })
+  .to(card, {
+    y: '-18vh',
+    rotation: -8,
+    duration: 1.0,
+    ease: 'power4.out'
+  })
+  .to(card, {
+    y: '-12vh',
+    rotation: -8,
+    duration: 0.25,
+    ease: 'power1.inOut'
+  })
+  .to(card, {
+    y: '-16vh',
+    rotation: -8,
+    duration: 0.18,
+    ease: 'power1.inOut'
+  })
+  .to(card, {
+    y: '-14vh',
+    rotation: -8,
+    duration: 0.22,
+    ease: 'power1.out'
+  });
+
+// Exit on scroll
+ScrollTrigger.create({
+  trigger: '#usp',
+  start: 'top bottom',
+  end: 'top top',
+  onUpdate: (self) => {
+    const p = self.progress;
+    gsap.set(card, {
+      y: `${-14 - p * 140}vh`,
+      rotation: -8 + p * 3,
+      opacity: 1 - p * 1.4
+    });
+    cardScene.style.pointerEvents = p > 0.7 ? 'none' : 'none';
+  }
+});
+
+/* ── Scroll reveal (IntersectionObserver) ── */
+const revealEls = document.querySelectorAll('.reveal');
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      revealObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+revealEls.forEach(el => revealObs.observe(el));
+
+/* ── Pillar hover glow ── */
+document.querySelectorAll('.pillar-cell').forEach(cell => {
+  cell.addEventListener('mousemove', (e) => {
+    const rect = cell.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
+    const y = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
+    cell.style.setProperty('--mx', x + '%');
+    cell.style.setProperty('--my', y + '%');
+  });
+});
+
+/* ── Stat counter animation ── */
+function animateCounter(el, target, suffix) {
+  let start = 0;
+  const duration = 1400;
+  const startTime = performance.now();
+  const isFloat = target % 1 !== 0;
+  function step(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const val = eased * target;
+    el.textContent = isFloat ? val.toFixed(1) : Math.floor(val);
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = target;
+  }
+  requestAnimationFrame(step);
+}
+
+const statObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const numEl = e.target.querySelector('.stat-num');
+      if (!numEl) return;
+      const text = numEl.textContent.trim();
+      const match = text.match(/[\d.]+/);
+      if (match) {
+        const target = parseFloat(match[0]);
+        const sup = numEl.querySelector('sup');
+        const supText = sup ? sup.outerHTML : '';
+        numEl.innerHTML = '0' + supText;
+        setTimeout(() => animateCounter(numEl.childNodes[0], target, ''), 100);
+      }
+      statObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.stat-cell').forEach(el => statObs.observe(el));
+</script>
+
+</body>
+</html>
